@@ -9,7 +9,4 @@ Route::get('/test', function () {
 });
 
 
-// fetch('/api/test')
-//   .then(res => res.json())
-//   .then(data => console.log(data))
-//   .catch(err => console.error('Error:', err));
+
