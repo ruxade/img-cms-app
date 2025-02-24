@@ -12,3 +12,15 @@ app.use(createPinia())
 app.use(router)
 
 app.mount('#app')
+
+
+
+
+
+
+import axios from 'axios'
+
+const token = localStorage.getItem('access_token')
+if (token) {
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+}
