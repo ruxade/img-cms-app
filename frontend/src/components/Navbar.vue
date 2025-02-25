@@ -1,8 +1,8 @@
 <template>
   <nav class="navbar">
     <div class="navbar-brand">
-      <router-link to="/" class="navbar-item">My App</router-link>
-      <!-- Hamburger menu for mobile (optional) -->
+      <router-link to="/" class="navbar-item">360Vault </router-link>
+      <!-- Hamburger menu for mobile  -->
       <a role="button" class="navbar-burger" :class="{ 'is-active': burgerActive }" @click="toggleBurger">
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
@@ -13,11 +13,13 @@
     <div class="navbar-menu" :class="{ 'is-active': burgerActive }">
       <div class="navbar-start">
         <router-link to="/" class="navbar-item">Home</router-link>
-        <!-- Add more links here as needed -->
+        <router-link to="/images" class="navbar-item">Images</router-link>
+        <router-link to="/upload" class="navbar-item">Upload</router-link>
+
       </div>
 
       <div class="navbar-end">
-        <!-- Show these buttons if the user is not logged in -->
+        <!-- If NOT logged in -->
         <div class="navbar-item" v-if="!isLoggedIn">
           <div class="buttons">
             <router-link to="/register" class="button is-primary">
@@ -27,12 +29,14 @@
           </div>
         </div>
 
-        <!-- If logged in, show a welcome message and logout button -->
+        <!-- If logged in -->
         <div class="navbar-item" v-else>
-          <span class="welcome-message">Welcome, {{ userEmail }}</span>
-          <button class="button is-light" @click="logout">Logout</button>
+
+          <div class="button is-light" @click="logout">Logout</div>
         </div>
       </div>
+
+
     </div>
   </nav>
 </template>
@@ -80,12 +84,17 @@ export default {
 
 <style scoped>
 .navbar {
-  background-color: #f5f5f5;
+  background-color: #424242;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #e4e4e4;
+  color: aliceblue;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .navbar-brand .navbar-item {
   font-size: 1.25rem;
+
   font-weight: bold;
 }
 .navbar-burger {
@@ -96,11 +105,7 @@ export default {
 }
 .navbar-item {
   margin-right: 1rem;
+
 }
-.welcome-message {
-  margin-right: 1rem;
-}
-.button {
-  margin-left: 0.5rem;
-}
+
 </style>
