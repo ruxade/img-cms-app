@@ -1,18 +1,23 @@
 <template>
-  <div class="image-list">
-    <h1>Your Images</h1>
-    <div v-if="images.length">
-      <div v-for="image in images" :key="image.id" class="image-item">
-        <img :src="imageUrl(image.path)" alt="Uploaded Image" />
-        <p>{{ image.caption }}</p>
-        <button @click="deleteImage(image.id)">Delete</button>
+  <div class="gallery">
+    <h1>{{ user }} Images</h1>
+    <div class="image-list">
+      <template v-if="images.length">
+        <div v-for="image in images" :key="image.id" class="image-item">
+          <img :src="imageUrl(image.path)" alt="Uploaded Image" />
+          <p>{{ image.caption }}</p>
+          <div class="btn-delete" @click="deleteImage(image.id)">
+            <i class="fa-solid fa-trash"></i>
+          </div>
+        </div>
+      </template>
+      <div v-else class="no-images">
+        <p>No images uploaded yet.</p>
       </div>
-    </div>
-    <div v-else>
-      <p>No images uploaded yet.</p>
     </div>
   </div>
 </template>
+
 
 <script>
 import axios from 'axios'
@@ -26,7 +31,7 @@ export default {
   },
   methods: {
     imageUrl(path) {
-      // Assuming you have set up a storage link (php artisan storage:link)
+      // php artisan storage:link
       return `http://localhost:8000/storage/${path}`
     },
     async fetchImages() {
@@ -61,17 +66,5 @@ export default {
 </script>
 
 <style scoped>
-.image-list {
-  max-width: 800px;
-  margin: 2rem auto;
-}
-.image-item {
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 1rem;
-}
-.image-item img {
-  max-width: 100%;
-  height: auto;
-}
+
 </style>

@@ -2,8 +2,8 @@
   <div class="image-upload">
     <h1>Upload Image</h1>
     <form @submit.prevent="uploadImage">
-      <input type="file" @change="handleFileChange" accept="image/*" required />
-      <input type="text" v-model="caption" placeholder="Caption (optional)" />
+      <input id="file-upload-btn" type="file" @change="handleFileChange" accept="image/*" required />
+      <input type="text" v-model="caption" placeholder="Caption" required/>
       <button type="submit">Upload</button>
     </form>
     <p v-if="message">{{ message }}</p>
@@ -66,13 +66,28 @@ export default {
 
 <style scoped>
 .image-upload {
-  max-width: 500px;
-  margin: 2rem auto;
+  min-width: 350px;
+  width: 80%;
+  min-height: 300px;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+    align-items: center;
+
+  margin: 5rem auto;
   padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid #cecece;
+  border-radius: 8px;
+  background-color: #E5E1DA;
+  box-shadow: 5px 5px 2px #89a8b279;
 }
-.error {
-  color: red;
+.custom-file-button {
+  display: inline-block;
+  background-color: #3490dc; 
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 </style>

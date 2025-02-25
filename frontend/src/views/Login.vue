@@ -55,32 +55,4 @@ export default {
 </script>
 
 <style scoped>
-.auth-container {
-  max-width: 400px;
-  margin: 2rem auto;
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-label {
-  display: block;
-  margin: 0.5rem 0 0.25rem;
-}
-input {
-  width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
-}
-button {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #3490dc;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.error {
-  color: red;
-}
 </style>

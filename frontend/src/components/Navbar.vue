@@ -1,111 +1,172 @@
+
+
 <template>
   <nav class="navbar">
+
     <div class="navbar-brand">
-      <router-link to="/" class="navbar-item">360Vault </router-link>
-      <!-- Hamburger menu for mobile  -->
-      <a role="button" class="navbar-burger" :class="{ 'is-active': burgerActive }" @click="toggleBurger">
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-      </a>
+      <router-link to="/" class="navbar-item">360 <i class="fa-solid fa-panorama"></i> Vault</router-link>
     </div>
 
-    <div class="navbar-menu" :class="{ 'is-active': burgerActive }">
-      <div class="navbar-start">
-        <router-link to="/" class="navbar-item">Home</router-link>
-        <router-link to="/images" class="navbar-item">Images</router-link>
-        <router-link to="/upload" class="navbar-item">Upload</router-link>
+      <div class="navbar-middle">
+        <!-- HOME -->
+        <router-link to="/" class="navbar-item">
+          <i class="fa-solid fa-house"></i>
+        </router-link>
 
+        <!-- Images -->
+        <router-link to="/images" class="navbar-item">
+          <i class="fas fa-images"></i>
+        </router-link>
+        <!-- Upload -->
+        <router-link to="/upload" class="navbar-item" >
+          <i class="fa-solid fa-folder-plus"></i>
+         </router-link>
       </div>
 
-      <div class="navbar-end">
-        <!-- If NOT logged in -->
-        <div class="navbar-item" v-if="!isLoggedIn">
-          <div class="buttons">
-            <router-link to="/register" class="button is-primary">
-              <strong>Register</strong>
-            </router-link>
-            <router-link to="/login" class="button is-light">Log in</router-link>
+      <div class="navbar-acc">
+        <!-- Account Dropdown -->
+        <div class="navbar-item has-dropdown" :class="{ 'is-active': dropdownActive }">
+          <a class="navbar-link" @click="toggleDropdown">
+            <i class="fas fa-user-circle"></i>
+          </a>
+          <div class="navbar-dropdown">
+            <!-- If NOT logged in -->
+            <div v-if="!isLoggedIn">
+              <router-link to="/register" class="navbar-item" @click="closeDropdown">
+                Register
+              </router-link>
+              <router-link to="/login" class="navbar-item" @click="closeDropdown">
+                Log in
+              </router-link>
+            </div>
+            <!-- If logged in -->
+            <div v-else>
+              <a class="navbar-item" @click="logout">
+                Logout
+              </a>
+            </div>
           </div>
         </div>
-
-        <!-- If logged in -->
-        <div class="navbar-item" v-else>
-
-          <div class="button is-light" @click="logout">Logout</div>
-        </div>
       </div>
 
-
-    </div>
   </nav>
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   name: "Navbar",
   data() {
     return {
-      burgerActive: false,
-      token: localStorage.getItem("access_token") || null,
-      userEmail: localStorage.getItem("user_email") || ''
-    }
-  },
-  computed: {
-    isLoggedIn() {
-      return !!this.token;
+      dropdownActive: false,
+      // Check login state using localStorage
+      isLoggedIn: !!localStorage.getItem("access_token"),
     }
   },
   methods: {
-    toggleBurger() {
-      this.burgerActive = !this.burgerActive;
+
+    toggleDropdown() {
+      this.dropdownActive = !this.dropdownActive;
+    },
+    closeDropdown() {
+      this.dropdownActive = false;
     },
     logout() {
-      // Remove token and any user data from localStorage
       localStorage.removeItem("access_token");
-      localStorage.removeItem("user_email");
-      delete axios.defaults.headers.common["Authorization"];
-      this.token = null;
-      this.userEmail = '';
-      // Redirect to the Login page
+      this.isLoggedIn = false;
+      this.closeDropdown();
       this.$router.push({ name: "Login" });
-    }
-  },
-  created() {
-    // If a token exists, set it as the default header for Axios
-    if (this.token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${this.token}`;
     }
   }
 }
 </script>
 
 <style scoped>
+
 .navbar {
-  background-color: #424242;
+  position: relative;
+  width: 100vw;
+  /* background: linear-gradient(to bottom, #213555, #3E5879); */
+  /* background-color: #35374B; */
+  background: linear-gradient(to bottom, #35374B, #464963);
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #e4e4e4;
+  border-bottom: 2px solid #6196A6;
   color: aliceblue;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0px 5px 9px #89a8b279;
+  max-height: 3.5rem;
 }
-.navbar-brand .navbar-item {
-  font-size: 1.25rem;
 
-  font-weight: bold;
+
+.navbar-brand .navbar-item {
+  color: #fff;
+  font-size: large;
 }
-.navbar-burger {
+
+
+.has-dropdown {
+  position: relative;
+}
+
+.navbar-middle {
   cursor: pointer;
-}
-.navbar-menu {
+  color: #fff;
+  font-size: 1.5rem;
+  padding: 1.5rem;
+  gap: 20px;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
 }
-.navbar-item {
-  margin-right: 1rem;
 
+.navbar-acc{
+  color: #fff;
+  font-size: 1.5rem;
+  padding: 0.5rem;
 }
+
+.navbar-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-width: 150px;
+  z-index: 1000;
+}
+
+.has-dropdown.is-active .navbar-dropdown {
+  display: block;
+}
+
+.navbar-dropdown .navbar-item {
+  color: #333;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  display: block;
+  transition: background-color 0.2s;
+}
+
+a:hover {
+    color:#5c8c9c;
+    font-size: larger;
+  }
+
+
+#navbar-btn{
+  background-color: #89A8B2;
+  color: #fff;
+  padding: 5px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  border-radius: 100%;
+  font-size: 20px;
+  font-weight: bold;
+}
+
 
 </style>
