@@ -32,6 +32,14 @@ class ImageController extends Controller
     }
 
   // Index
+
+        public function publicIndex()
+      {
+          $images = Image::where('visibility', 'public')->get();
+          return response()->json($images);
+      }
+
+
     public function index(Request $request)
     {
         if ($request->user()) {

@@ -4,15 +4,12 @@
     <div class="image-list">
       <template v-if="images.length">
         <div v-for="image in images" :key="image.id" class="image-item">
-          <img :src="imageUrl(image.path)" alt="Uploaded Image" />
-          <p class="caption">{{ image.caption }}</p>
-
           <div class="buttons">
             <!--  Delete button -->
             <div class="btn-delete" @click="deleteImage(image.id)">
               <i class="fa-solid fa-trash"></i>
             </div>
-            
+
             <div class="btn-toggle" @click="toggleVisibility(image)">
               <i v-if="image.visibility === 'public'" class="fa-solid fa-eye"></i>
               <i v-else class="fa-solid fa-eye-slash"></i>
@@ -23,6 +20,12 @@
               <i class="fa-solid fa-cube"></i>
             </div>
           </div>
+
+
+          <img :src="imageUrl(image.path)" alt="Uploaded Image" />
+          <p class="caption">{{ image.caption }}</p>
+
+
         </div>
       </template>
       <div v-else class="no-images">
@@ -98,17 +101,6 @@ export default {
 
 <style scoped>
 
-.buttons {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-}
-
-.caption {
-  font-style: italic;
-  padding: 10px;
-}
 
 
 
