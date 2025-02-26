@@ -12,6 +12,12 @@
             <div class="btn-delete" @click="deleteImage(image.id)">
               <i class="fa-solid fa-trash"></i>
             </div>
+            
+            <div class="btn-toggle" @click="toggleVisibility(image)">
+              <i v-if="image.visibility === 'public'" class="fa-solid fa-eye"></i>
+              <i v-else class="fa-solid fa-eye-slash"></i>
+            </div>
+
             <!--  3D projection button -->
             <div class="btn-3d" @click="view3D(image)">
               <i class="fa-solid fa-cube"></i>
@@ -64,6 +70,23 @@ export default {
         this.fetchImages()
       } catch (err) {
         console.error("Error deleting image", err)
+      }
+    },
+
+  async toggleVisibility(image) {
+      try {
+        const token = localStorage.getItem('access_token');
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        const response = await axios.patch(`http://localhost:8000/api/images/${image.id}/toggle-visibility`, {}, {
+          headers: { 'Accept': 'application/json' }
+        });
+        // Update the local image with new visibility status
+        const index = this.images.findIndex(img => img.id === image.id);
+        if (index !== -1) {
+          this.images.splice(index, 1, response.data);
+        }
+      } catch (err) {
+        console.error("Error toggling visibility", err);
       }
     }
   },
