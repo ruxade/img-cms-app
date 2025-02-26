@@ -106,6 +106,19 @@ export default {
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  margin: 8px 0;
 }
+
+select {
+  /* display: block; */
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  color: #497174;
+  background-color: #fff;
+  border-radius: 4px;
+  font-weight: 800;
+}
+
+
+
 </style>

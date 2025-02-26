@@ -100,10 +100,11 @@ export default {
 
 
 .navbar-brand .navbar-item {
-  color: #fff;
+  color: #DFD8C8;
   font-size: large;
-  /* font-weight: 600; */
-  font-stretch: 50%;
+  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-weight: 600;
+  font-stretch: -50%;
 }
 
 
@@ -153,7 +154,7 @@ export default {
 }
 
 a:hover {
-    color:#5c8c9c;
+    color:#F2A154;
     font-size: larger;
   }
 

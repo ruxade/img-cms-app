@@ -38,6 +38,7 @@
 
 <script>
 import axios from 'axios'
+import { saveImages, getOfflineImages } from '../utils/db'
 
 export default {
   name: 'ImageList',
@@ -52,17 +53,26 @@ export default {
       return `http://localhost:8000/storage/${path}`
     },
     async fetchImages() {
-      try {
-        const token = localStorage.getItem('access_token')
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-        const response = await axios.get('http://localhost:8000/api/images', {
-          headers: { 'Accept': 'application/json' }
-        })
-        this.images = response.data
-      } catch (err) {
-        console.error("Error fetching images", err)
+      if (navigator.onLine) {
+        try {
+          // Fetch public images
+          const response = await axios.get('http://localhost:8000/api/public-images', {
+            headers: { 'Accept': 'application/json' }
+          });
+          this.images = response.data;
+          // Save the fetched images in IndexedDB for offline use
+          await saveImages(this.images);
+        } catch (err) {
+          console.error("Error fetching images from API:", err);
+          // Fallback to offline images if API fails
+          this.images = await getOfflineImages();
+        }
+      } else {
+        // Offline: load images from IndexedDB
+        this.images = await getOfflineImages();
       }
     },
+
     async deleteImage(id) {
       try {
         const token = localStorage.getItem('access_token')
@@ -70,6 +80,7 @@ export default {
         await axios.delete(`http://localhost:8000/api/images/${id}`, {
           headers: { 'Accept': 'application/json' }
         })
+        // Refresh images
         this.fetchImages()
       } catch (err) {
         console.error("Error deleting image", err)
