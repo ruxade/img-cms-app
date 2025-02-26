@@ -5,6 +5,8 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import ImageUpload from '../views/ImageUpload.vue'
 import ImageList from '../views/ImageList.vue'
+import Image3D from '../views/Image3D.vue'
+import ImageShow from '../views/ImageShow.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,6 +22,8 @@ const router = createRouter({
     { path: '/register', name: 'Register', component: Register },
     { path: '/upload', name: 'Upload', component: ImageUpload },
     { path: '/images', name: 'Images', component: ImageList },
+    { path: '/3d/:id', name: 'Image3D', component: Image3D },
+    { path: '/images/:id', name: 'ImageShow', component: ImageShow }
   ],
 })
 

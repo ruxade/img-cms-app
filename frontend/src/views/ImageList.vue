@@ -15,6 +15,10 @@
               <i v-else class="fa-solid fa-eye-slash"></i>
             </div>
 
+            <div class="btn-show" @click="viewShow(image)">
+              <i class="fa-solid fa-info-circle"></i>
+            </div>
+
             <!--  3D projection button -->
             <div class="btn-3d" @click="view3D(image)">
               <i class="fa-solid fa-cube"></i>
@@ -24,6 +28,9 @@
 
           <img :src="imageUrl(image.path)" alt="Uploaded Image" />
           <p class="caption">{{ image.caption }}</p>
+          <!-- <p><strong>Caption:</strong> {{ image.caption }}</p> -->
+          <p>({{ image.visibility }})</p>
+
 
 
         </div>
@@ -39,6 +46,7 @@
 <script>
 import axios from 'axios'
 import { saveImages, getOfflineImages } from '../utils/db'
+import Swal from 'sweetalert2'
 
 export default {
   name: 'ImageList',
@@ -48,6 +56,15 @@ export default {
     }
   },
   methods: {
+
+  view3D(image) {
+    this.$router.push({ name: 'Image3D', params: { id: image.id } });
+  },
+
+  viewShow(image) {
+     this.$router.push({ name: 'ImageShow', params: { id: image.id } });
+  },
+
     imageUrl(path) {
       // php artisan storage:link
       return `http://localhost:8000/storage/${path}`
@@ -74,6 +91,21 @@ export default {
     },
 
     async deleteImage(id) {
+
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you really want to delete this image?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#960000',
+        cancelButtonColor: '#497174',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+      })
+      if (!result.isConfirmed) {
+        // User canceled deletion
+        return;
+      }
       try {
         const token = localStorage.getItem('access_token')
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
@@ -82,6 +114,7 @@ export default {
         })
         // Refresh images
         this.fetchImages()
+        Swal.fire('Deleted!', 'Your image has been deleted.', 'success');
       } catch (err) {
         console.error("Error deleting image", err)
       }

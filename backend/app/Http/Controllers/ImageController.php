@@ -31,6 +31,13 @@ class ImageController extends Controller
         return response()->json($image, 201);
     }
 
+
+    // SHow
+    public function show(Request $request, $id)
+    {
+        $image = Image::findOrFail($id);
+        return response()->json($image);
+    }
   // Index
 
         public function publicIndex()
@@ -75,12 +82,12 @@ class ImageController extends Controller
     {
         $image = Image::findOrFail($id);
 
-        // Ensure the image belongs to the authenticated user
+        // if image belongs to the authenticated user
         if ($image->user_id !== $request->user()->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        // Remove the file from storage
+        // Remove from storage
         Storage::disk('public')->delete($image->path);
         // Delete the database record
         $image->delete();

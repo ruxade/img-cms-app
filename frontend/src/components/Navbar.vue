@@ -4,7 +4,7 @@
   <nav class="navbar">
 
     <div class="navbar-brand">
-      <router-link to="/" class="navbar-item">FRAME360</router-link>
+      <router-link to="/" class="navbar-item"><span style="color: #960000; font-weight: 600;">360</span>FRAME </router-link>
     </div>
 
       <div class="navbar-middle">

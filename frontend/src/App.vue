@@ -7,8 +7,7 @@ import Navbar from './components/Navbar.vue'
 
 <template>
 
-
-    <Navbar /><!-- Navbar at the top -->
+    <Navbar /><!-- Navbar -->
 
   <header>
 
@@ -18,5 +17,4 @@ import Navbar from './components/Navbar.vue'
 </template>
 
 <style scoped>
-
 </style>
