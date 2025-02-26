@@ -2,13 +2,27 @@
   <div class="image-upload">
     <h1>Upload Image</h1>
     <form @submit.prevent="uploadImage">
-      <input id="file-upload-btn" type="file" @change="handleFileChange" accept="image/*" required />
-      <input type="text" v-model="caption" placeholder="Caption" required/>
+      <div class="file-button">
+        <input id="file-upload-btn" type="file" @change="handleFileChange" accept="image/*" required hidden />
+        <label for="file-upload-btn" class="custom-file-button">Choose File</label>
+        <span v-if="fileName">{{ fileName }}</span>
+      </div>
+
+      <input type="text" v-model="caption" placeholder="Caption" required />
+
+      <!-- New select for visibility -->
+      <select v-model="visibility" required>
+        <option disabled value="">Select visibility</option>
+        <option value="public">Public</option>
+        <option value="private">Private</option>
+      </select>
+
       <button type="submit">Upload</button>
     </form>
     <p v-if="message">{{ message }}</p>
     <p v-if="error" class="error">{{ error }}</p>
   </div>
+
 </template>
 
 <script>
@@ -20,6 +34,7 @@ export default {
     return {
       file: null,
       caption: '',
+      visibility: '',
       message: '',
       error: ''
     }
@@ -27,16 +42,18 @@ export default {
   methods: {
     handleFileChange(event) {
       this.file = event.target.files[0]
+      this.fileName = this.file ? this.file.name : '';
     },
     async uploadImage() {
       if (!this.file) {
-        this.error = 'Please select an image file.'
-        return
+        this.error = 'Please select an image file and choose visibility.';
+        return;
       }
 
       const formData = new FormData()
       formData.append('image', this.file)
       formData.append('caption', this.caption)
+      formData.append('visibility', this.visibility);
 
       try {
         // Get the token from localStorage and set the header
@@ -55,6 +72,7 @@ export default {
         //  clear the form:
         this.file = null
         this.caption = ''
+        this.visibility = '';
       } catch (err) {
         this.error = err.response?.data?.message || 'Upload failed.'
         this.message = ''
@@ -66,7 +84,7 @@ export default {
 
 <style scoped>
 .image-upload {
-  min-width: 350px;
+  /* min-width: 350px; */
   width: 80%;
   min-height: 300px;
   display: flex;
@@ -83,7 +101,7 @@ export default {
 }
 .custom-file-button {
   display: inline-block;
-  background-color: #3490dc; 
+  background-color: #497174;
   color: #fff;
   padding: 8px 16px;
   border-radius: 4px;

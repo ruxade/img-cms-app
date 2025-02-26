@@ -19,5 +19,7 @@ Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logo
 Route::middleware('auth:sanctum')->group(function () {
   Route::get('/images', [ImageController::class, 'index']);
   Route::post('/images', [ImageController::class, 'store']);
+  Route::middleware('auth:sanctum')->patch('/images/{id}/toggle-visibility', [ImageController::class, 'toggleVisibility']);
+
   Route::delete('/images/{id}', [ImageController::class, 'destroy']);
 });

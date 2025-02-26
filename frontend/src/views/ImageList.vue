@@ -1,13 +1,21 @@
 <template>
   <div class="gallery">
-    <h1>{{ user }} Images</h1>
+    <h1>My Images</h1>
     <div class="image-list">
       <template v-if="images.length">
         <div v-for="image in images" :key="image.id" class="image-item">
           <img :src="imageUrl(image.path)" alt="Uploaded Image" />
-          <p>{{ image.caption }}</p>
-          <div class="btn-delete" @click="deleteImage(image.id)">
-            <i class="fa-solid fa-trash"></i>
+          <p class="caption">{{ image.caption }}</p>
+
+          <div class="buttons">
+            <!--  Delete button -->
+            <div class="btn-delete" @click="deleteImage(image.id)">
+              <i class="fa-solid fa-trash"></i>
+            </div>
+            <!--  3D projection button -->
+            <div class="btn-3d" @click="view3D(image)">
+              <i class="fa-solid fa-cube"></i>
+            </div>
           </div>
         </div>
       </template>
@@ -66,5 +74,19 @@ export default {
 </script>
 
 <style scoped>
+
+.buttons {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.caption {
+  font-style: italic;
+  padding: 10px;
+}
+
+
 
 </style>

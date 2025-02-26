@@ -4,7 +4,7 @@
   <nav class="navbar">
 
     <div class="navbar-brand">
-      <router-link to="/" class="navbar-item">360 <i class="fa-solid fa-panorama"></i> Vault</router-link>
+      <router-link to="/" class="navbar-item">FRAME360</router-link>
     </div>
 
       <div class="navbar-middle">
@@ -87,7 +87,7 @@ export default {
   width: 100vw;
   /* background: linear-gradient(to bottom, #213555, #3E5879); */
   /* background-color: #35374B; */
-  background: linear-gradient(to bottom, #35374B, #464963);
+  background: linear-gradient(to bottom, #497174, #609497);
   padding: 0.75rem 1rem;
   border-bottom: 2px solid #6196A6;
   color: aliceblue;
@@ -102,6 +102,8 @@ export default {
 .navbar-brand .navbar-item {
   color: #fff;
   font-size: large;
+  /* font-weight: 600; */
+  font-stretch: 50%;
 }
 
 

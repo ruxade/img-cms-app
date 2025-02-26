@@ -14,6 +14,7 @@ class ImageController extends Controller
         $request->validate([
             'image'   => 'required|image|max:5120', // max size 5MB
             'caption' => 'nullable|string|max:255',
+            'visibility' => 'required|in:public,private', // require public or private
         ]);
 
         // Store the image on the 'public' disk in the 'images' folder
@@ -24,19 +25,44 @@ class ImageController extends Controller
             'user_id' => $request->user()->id,
             'caption' => $request->caption,
             'path'    => $path,
+            'visibility' => $request->visibility, // store visibility from the request
         ]);
 
         return response()->json($image, 201);
     }
 
-    // Retrieve images for the authenticated user
+  // Index
     public function index(Request $request)
     {
-        $images = Image::where('user_id', $request->user()->id)->get();
+        if ($request->user()) {
+            // Authenticated: Return both public and private img
+            $images = Image::where('user_id', $request->user()->id)->get();
+        } else {
+            // Unauthenticated: Return only public images
+            $images = Image::where('visibility', 'public')->get();
+        }
         return response()->json($images);
     }
 
-    // Delete an image
+    // Visibility
+    public function toggleVisibility(Request $request, $id)
+  {
+    $image = Image::findOrFail($id);
+
+    // Ensure the image belongs to the authenticated user.
+    if ($image->user_id !== $request->user()->id) {
+        return response()->json(['message' => 'Unauthorized'], 403);
+    }
+
+    // Toggle visibility.
+    $newVisibility = $image->visibility === 'public' ? 'private' : 'public';
+    $image->update(['visibility' => $newVisibility]);
+
+    return response()->json($image);
+  }
+
+
+    // Delete
     public function destroy(Request $request, $id)
     {
         $image = Image::findOrFail($id);
