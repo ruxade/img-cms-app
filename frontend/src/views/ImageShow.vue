@@ -1,6 +1,6 @@
 <template>
   <div class="image-show">
-    <h1> Image Details</h1>
+    <h3> Image Details</h3>
 
     <div v-if="image">
       <img :src="imageUrl(image.path)" alt="Image" />
