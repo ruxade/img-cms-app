@@ -1,6 +1,10 @@
 <template>
   <div class="gallery">
-    <h1>My Images</h1>
+    <div class="title-frame">
+      <img id="frame" src="@/assets/frame.png" alt="360_Logo"  />
+      <!-- <h5>All Images</h5> -->
+      <h4 >My Images</h4>
+    </div>
     <div class="image-list">
       <template v-if="images.length">
         <div v-for="image in images" :key="image.id" class="image-item">
@@ -50,6 +54,8 @@ import axios from 'axios'
 import { saveImages, getOfflineImages } from '../utils/db'
 import Swal from 'sweetalert2'
 
+
+
 export default {
   name: 'ImageList',
   data() {
@@ -75,11 +81,11 @@ export default {
       if (navigator.onLine) {
         try {
           // Fetch public images
-          const response = await axios.get('http://localhost:8000/api/public-images', {
+          const response = await axios.get('http://localhost:8000/api/images', {
             headers: { 'Accept': 'application/json' }
           });
           this.images = response.data;
-          // Save the fetched images in IndexedDB for offline use
+          // Save images in IndexedDB for offline use
           await saveImages(this.images);
         } catch (err) {
           console.error("Error fetching images from API:", err);
@@ -143,6 +149,8 @@ export default {
     this.fetchImages()
   }
 }
+
+
 </script>
 
 <style scoped>
@@ -150,11 +158,60 @@ export default {
 #visibility {
   position: absolute;
   font-size: small;
-  top: 10px;
-  color: aliceblue;
+  font-style: oblique;
+  bottom: 25px;
+  /* color: #497174; */
   font-variant-caps: all-small-caps;
   font-stretch: ultra-expanded;
 }
 
+.private {
+  border: 2px solid #497174;
+}
+
+.title-frame {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* position: relative; */
+  border-bottom: 2px solid #497174;
+  padding-bottom: 50px;
+  margin-bottom: 50px;
+  position: relative;
+}
+
+@keyframes anim {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  position: absolute;
+  animation: anim 3s ease-in-out infinite;
+}
+#frame:hover{
+}
+
+h4{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60%;
+  position: absolute;
+  color: #497174;
+
+}
 
 </style>

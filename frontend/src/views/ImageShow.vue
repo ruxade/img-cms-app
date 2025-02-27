@@ -113,8 +113,8 @@ export default {
     const response = await axios.patch(`http://localhost:8000/api/images/${image.id}/toggle-visibility`, {}, {
       headers: { 'Accept': 'application/json' }
     });
-    // Update the local image with new visibility status
-    const index = this.images.findIndex(img => img.id === image.id);
+    // Update the image with visibility status
+
     this.image = response.data;
   } catch (err) {
     console.error("Error toggling visibility", err);

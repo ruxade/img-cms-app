@@ -1,8 +1,8 @@
 <template>
-  <div class="gallery">
+  <div class="gallery" id="home">
     <h1>
-      <img src="@/assets/360logo_color.png" alt="360_Logo" />
-      <h5>All Images</h5>
+      <img src="@/assets/360logo_l.png" alt="360_Logo" style="max-height: 300px; width: 100%;  object-fit: contain;" />
+      <!-- <h5>All Images</h5> -->
     </h1>
 
 
@@ -14,7 +14,7 @@
                     <div class="btn-3d" @click="view3D(image)">
               <i class="fa-solid fa-cube"></i>
             </div>
-        
+
         </div>
       </template>
       <div v-else class="no-images">
@@ -62,7 +62,9 @@ export default {
 </script>
 
 <style scoped>
-
-
+#home{
+  background-color: #e5e1da67;
+  height: 100%;
+}
 
 </style>
