@@ -9,6 +9,7 @@
 <script>
 import axios from 'axios'
 import * as THREE from "three";
+import { ref, onMounted, onUnmounted } from "vue";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 export default {
