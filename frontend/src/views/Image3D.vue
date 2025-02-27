@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import { nextTick } from "vue";
 import axios from 'axios'
 import * as THREE from "three";
 import { ref, onMounted, onUnmounted } from "vue";
@@ -28,140 +29,142 @@ export default {
       },
       image:null,
       imageId: null,
+      cursor: { x: 0, y: 0 },
+      animationFrameId: null,
     };
   },
-
-  mounted() {
+  async mounted() {
     this.imageId = this.$route.params.id;
+    await nextTick(); // Ensure DOM is ready before accessing refs
+
+    this.initScene();
+    this.initCamera();
+    this.initRenderer();
+    this.initControls();
+    this.initGeometry();
+    this.initEventListeners();
+    this.animate();
+
     this.fetchImage();
-
-    const canvas = this.$refs.canvas; // Use Vue's ref instead of querySelector
-
-    // sizes
-    const sizes = {
-      width: window.innerWidth * 0.8,
-      height: window.innerHeight * 0.8,
-    };
-
-    // Cursor object
-    const cursor = { x: 0, y: 0 };
-
-    // Cursor movement event listener
-    window.addEventListener("mousemove", (event) => {
-      cursor.x = event.clientX / sizes.width - 0.5;
-      cursor.y = -(event.clientY / sizes.height - 0.5);
-    });
-
-    // scene
-    const scene = new THREE.Scene();
-
-    // texture
-    const textureLoader = new THREE.TextureLoader();
-    const textureUrl = this.imageUrl(`images/${this.imageId}.png`);
-    const texture = textureLoader.load(textureUrl)
-
-    // texture.mapping = THREE.EquirectangularReflectionMapping;
-
-
-    // geometry
-    const geometry = new THREE.SphereGeometry(500,32, 32);
-    geometry.scale(-1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({ map: texture });
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-
-    const cube = new THREE.BoxGeometry(1, 1, 1)
-const cubeMaterial = new THREE.MeshBasicMaterial({
-    color: '#ff0000'
-})
-const cubeMesh = new THREE.Mesh(cube, cubeMaterial)
-
-scene.add(cubeMesh)
-
-    // perspective camera
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      sizes.width / sizes.height,
-      0.1,
-      1000
-    );
-    camera.position.z = 3;
-    scene.add(camera);
-
-    // renderer
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    renderer.setSize(sizes.width, sizes.height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    // Controls
-    const controls = new OrbitControls(camera, canvas);
-    controls.enableDamping = true;
-    controls.enableZoom = false;
-
-    // Handle resizing
-    window.addEventListener("resize", () => {
-      sizes.width = window.innerWidth * 0.8;
-      sizes.height = window.innerHeight * 0.8;
-
-      camera.aspect = sizes.width / sizes.height;
-      camera.updateProjectionMatrix();
-
-      renderer.setSize(sizes.width, sizes.height);
-    });
-
-
-
-    // Animation loop
-    const tick = () => {
-      // Update camera based on cursor movement
-
-      camera.lookAt(mesh.position);
-
-      controls.update();
-      renderer.render(scene, camera);
-      window.requestAnimationFrame(tick);
-    };
-
-    tick();
   },
+  beforeUnmount() {
+    // Cleanup event listeners and animations
+    window.removeEventListener("mousemove", this.handleMouseMove);
+    window.removeEventListener("resize", this.handleResize);
+
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+
+    if (this.renderer) {
+      this.renderer.dispose();
+    }
+  },
+
   methods: {
-    imageUrl(path) {
-      // Construct the full URL to the stored image
-      return `http://localhost:8000/storage/${path}`;
-    },
     async fetchImage() {
       try {
-          const response = await axios.get(`http://localhost:8000/api/images/${this.imageId}`, {
-            headers: { 'Accept': 'application/json' }
-          });
-          this.image = response.data;
-          this.loadTexture(); // Ensure texture is only loaded after fetching the image
-        } catch (error) {
-          console.error("Error fetching image", error);
-        }
-      },
+        const response = await axios.get(`http://localhost:8000/api/images/${this.imageId}`, {
+          headers: { Accept: "application/json" },
+        });
+        this.image = response.data;
+        this.loadTexture();
+      } catch (error) {
+        console.error("Error fetching image", error);
+      }
+    },
 
-    formatDate(dateString) {
-      if (!dateString) return "Unknown date";
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      return new Date(dateString).toLocaleDateString(undefined, options);
+    imageUrl(path) {
+      return `http://localhost:8000/storage/${path}`;
     },
-    goBack() {
-      this.$router.go(-1); // Navigate back to the previous page
+
+    initScene() {
+      this.scene = new THREE.Scene();
     },
+
+    initCamera() {
+      this.camera = new THREE.PerspectiveCamera(75, this.sizes.width / this.sizes.height, 0.1, 1000);
+      this.camera.position.set(0, 0, 3);
+      this.scene.add(this.camera);
+    },
+
+    initRenderer() {
+      const canvas = this.$refs.canvas;
+      this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      this.renderer.setSize(this.sizes.width, this.sizes.height);
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    },
+
+    initControls() {
+      this.controls = new OrbitControls(this.camera, this.$refs.canvas);
+      this.controls.enableDamping = true;
+      this.controls.enableZoom = false;
+    },
+
+    initGeometry() {
+      // Sphere Geometry (For Panorama)
+      const geometry = new THREE.SphereGeometry(500, 32, 32);
+      geometry.scale(-1, 1, 1);
+
+      const material = new THREE.MeshBasicMaterial({ color: 0x222222 }); // Placeholder color
+      this.mesh = new THREE.Mesh(geometry, material);
+      this.scene.add(this.mesh);
+
+      // Red Cube (For Reference)
+      const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+      const cubeMaterial = new THREE.MeshBasicMaterial({ color: "#ff0000" });
+      const cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
+      cubeMesh.position.set(2, 2, 2);
+      this.scene.add(cubeMesh);
+    },
+
     loadTexture() {
-  const textureLoader = new THREE.TextureLoader();
-  const textureUrl = this.imageUrl(`images/${this.imageId}.png`);
-  const texture = textureLoader.load(textureUrl);
-  this.mesh.material.map = texture;
-  this.mesh.material.needsUpdate = true; // Ensure material updates with new texture
-}
+      if (!this.image) return;
 
+      const textureLoader = new THREE.TextureLoader();
+      const textureUrl = this.imageUrl(`images/${this.imageId}.png`);
+      textureLoader.load(textureUrl, (texture) => {
+        this.mesh.material.map = texture;
+        this.mesh.material.needsUpdate = true;
+      });
+    },
+
+    animate() {
+      const tick = () => {
+        this.camera.lookAt(this.mesh.position);
+        this.controls.update();
+        this.renderer.render(this.scene, this.camera);
+        this.animationFrameId = requestAnimationFrame(tick);
+      };
+      tick();
+    },
+
+    initEventListeners() {
+      // Handle Mouse Move
+      window.addEventListener("mousemove", this.handleMouseMove);
+
+      // Handle Window Resize
+      window.addEventListener("resize", this.handleResize);
+    },
+
+    handleMouseMove(event) {
+      this.cursor.x = event.clientX / this.sizes.width - 0.5;
+      this.cursor.y = -(event.clientY / this.sizes.height - 0.5);
+    },
+
+    handleResize() {
+      this.sizes.width = window.innerWidth * 0.8;
+      this.sizes.height = window.innerHeight * 0.8;
+
+      this.camera.aspect = this.sizes.width / this.sizes.height;
+      this.camera.updateProjectionMatrix();
+
+      this.renderer.setSize(this.sizes.width, this.sizes.height);
+    },
   },
-
-
 };
 </script>
+
 
 <style scoped>
 .scene {
