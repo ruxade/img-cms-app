@@ -2,25 +2,36 @@
   <div class="image-upload">
     <h1>Upload Image</h1>
     <form @submit.prevent="uploadImage">
+      <div class="upload-btn">
+
       <div class="file-button">
         <input id="file-upload-btn" type="file" @change="handleFileChange" accept="image/*" required hidden />
-        <label for="file-upload-btn" class="custom-file-button">Choose File</label>
+        <label for="file-upload-btn" class="custom-file-button"><i class="fa-solid fa-upload"> </i> Choose File</label>
         <span v-if="fileName">{{ fileName }}</span>
       </div>
 
       <!-- Camera Capture Button -->
-      <button type="button" class="custom-file-button" @click="openCamera">Take a Photo</button>
+      <button type="button" class="custom-file-button" @click="openCamera"><i class="fa-solid fa-camera"> </i> Take a Photo </button>
+    </div>
 
-      <!-- Video Preview for Camera -->
+      <!-- Video Preview - Camera -->
       <div v-if="showCamera">
         <video ref="video" autoplay></video>
         <button type="button" @click="captureImage">Capture</button>
       </div>
 
-      <!-- Image Preview -->
+      <!--  Preview -->
       <img v-if="previewImage" :src="previewImage" class="preview" />
 
-      <input type="text" v-model="caption" placeholder="Caption" required />
+      <input
+          type="text"
+          v-model="caption"
+          placeholder="Caption"
+          maxlength="100"
+          @input="validateCaption"
+          required
+        />
+        <p class="char-counter">{{ caption.length }}/50</p>
 
       <select v-model="visibility" required>
         <option disabled value="">Select visibility</option>
@@ -28,7 +39,7 @@
         <option value="private">Private</option>
       </select>
 
-      <button type="submit">Upload</button>
+      <button type="submit">UPLOAD</button>
     </form>
 
     <p v-if="message">{{ message }}</p>
@@ -38,6 +49,8 @@
 
 <script>
 import axios from "axios";
+import { saveImages, getOfflineImages } from '../utils/db'
+import Swal from 'sweetalert2'
 
 export default {
   name: "ImageUpload",
@@ -52,6 +65,7 @@ export default {
       showCamera: false,
       previewImage: null,
       stream: null,
+      captionMaxLength: 50,
     };
   },
   methods: {
@@ -65,11 +79,22 @@ export default {
         this.error = "Please select or capture an image.";
         return;
       }
+      if (this.caption.length > this.captionMaxLength) {
+        this.error = "Caption is too long.";
+        return;
+      }
 
       const formData = new FormData();
       formData.append("image", this.file);
       formData.append("caption", this.caption);
       formData.append("visibility", this.visibility);
+
+
+      console.log("Uploading image with data:", {
+        file: this.file,
+        caption: this.caption,
+        visibility: this.visibility
+      });
 
       try {
         const token = localStorage.getItem("access_token");
@@ -81,10 +106,14 @@ export default {
             Accept: "application/json",
           },
         });
+        console.log("Upload response:", response);
 
-        this.message = "Image uploaded successfully!";
-        this.error = "";
-        this.resetForm();
+        Swal.fire("Added!", "Your image has been uploaded.", "success")
+      .then(() => {
+        this.$router.push({ name: "Images" });
+        // this.resetForm();
+      });
+
       } catch (err) {
         this.error = err.response?.data?.message || "Upload failed.";
         this.message = "";
@@ -139,14 +168,14 @@ export default {
 
 <style scoped>
 .image-upload {
-  width: 80%;
+  width: 50%;
   min-height: 300px;
   display: flex;
   justify-content: space-around;
   flex-direction: column;
   align-items: center;
   margin: 5rem auto;
-  padding: 1rem;
+  padding: 4rem 0;
   border: 1px solid #cecece;
   border-radius: 8px;
   background-color: #E5E1DA;
@@ -157,16 +186,28 @@ export default {
   display: inline-block;
   background-color: #497174;
   color: #fff;
+  width: 100%;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
-  margin: 8px 0;
+  text-align: center;
+  font-weight: 200;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
+.upload-btn{
+  display: block;
+
+}
+select, input {
+  width: 100%;
+  padding: 8px;
+  margin: 20px 0;
+}
 .preview {
   max-width: 100%;
   height: auto;
-  margin-top: 10px;
+  margin: 10px;
   border-radius: 4px;
   border: 2px solid #497174;
 }

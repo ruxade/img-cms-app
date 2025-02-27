@@ -1,14 +1,18 @@
 <template>
   <div class="gallery">
-    <h1>My Images</h1>
+    <div class="title-frame">
+      <img id="frame" src="@/assets/frame.png" alt="360_Logo"  />
+      <!-- <h5>All Images</h5> -->
+      <h4 >My Images</h4>
+    </div>
     <div class="image-list">
       <template v-if="images.length">
         <div v-for="image in images" :key="image.id" class="image-item">
           <div class="buttons">
             <!--  Delete button -->
-            <div class="btn-delete" @click="deleteImage(image.id)">
+            <!-- <div class="btn-delete" @click="deleteImage(image.id)">
               <i class="fa-solid fa-trash"></i>
-            </div>
+            </div> -->
 
             <div class="btn-toggle" @click="toggleVisibility(image)">
               <i v-if="image.visibility === 'public'" class="fa-solid fa-eye"></i>
@@ -27,9 +31,11 @@
 
 
           <img :src="imageUrl(image.path)" alt="Uploaded Image" />
-          <p class="caption">{{ image.caption }}</p>
-          <!-- <p><strong>Caption:</strong> {{ image.caption }}</p> -->
-          <p>({{ image.visibility }})</p>
+
+            <p class="caption">{{ image.caption }}</p>
+            <!-- <p><strong>Caption:</strong> {{ image.caption }}</p> -->
+            <p id="visibility">Visibility : {{ image.visibility }} image </p>
+
 
 
 
@@ -48,6 +54,8 @@ import axios from 'axios'
 import { saveImages, getOfflineImages } from '../utils/db'
 import Swal from 'sweetalert2'
 
+
+
 export default {
   name: 'ImageList',
   data() {
@@ -65,7 +73,7 @@ export default {
      this.$router.push({ name: 'ImageShow', params: { id: image.id } });
   },
 
-    imageUrl(path) {
+  imageUrl(path) {
       // php artisan storage:link
       return `http://localhost:8000/storage/${path}`
     },
@@ -73,11 +81,11 @@ export default {
       if (navigator.onLine) {
         try {
           // Fetch public images
-          const response = await axios.get('http://localhost:8000/api/public-images', {
+          const response = await axios.get('http://localhost:8000/api/images', {
             headers: { 'Accept': 'application/json' }
           });
           this.images = response.data;
-          // Save the fetched images in IndexedDB for offline use
+          // Save images in IndexedDB for offline use
           await saveImages(this.images);
         } catch (err) {
           console.error("Error fetching images from API:", err);
@@ -120,7 +128,7 @@ export default {
       }
     },
 
-  async toggleVisibility(image) {
+    async toggleVisibility(image) {
       try {
         const token = localStorage.getItem('access_token');
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -141,11 +149,69 @@ export default {
     this.fetchImages()
   }
 }
+
+
 </script>
 
 <style scoped>
 
+#visibility {
+  position: absolute;
+  font-size: small;
+  font-style: oblique;
+  bottom: 25px;
+  /* color: #497174; */
+  font-variant-caps: all-small-caps;
+  font-stretch: ultra-expanded;
+}
 
+.private {
+  border: 2px solid #497174;
+}
 
+.title-frame {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* position: relative; */
+  border-bottom: 2px solid #497174;
+  padding-bottom: 50px;
+  margin-bottom: 50px;
+  position: relative;
+}
+
+@keyframes anim {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  position: absolute;
+  animation: anim 3s ease-in-out infinite;
+}
+#frame:hover{
+}
+
+h4{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60%;
+  position: absolute;
+  color: #497174;
+
+}
 
 </style>

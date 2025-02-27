@@ -4,8 +4,11 @@
   <nav class="navbar">
 
     <div class="navbar-brand">
-      <router-link to="/" class="navbar-item"><span style="color: #960000; font-weight: 600;">360</span>FRAME </router-link>
-    </div>
+  <router-link to="/" class="navbar-item">
+    <img src="@/assets/360_logo.svg" alt="360_Logo" style="max-height: 60px;" />
+  </router-link>
+</div>
+
 
       <div class="navbar-middle">
         <!-- HOME -->
@@ -99,12 +102,12 @@ export default {
 }
 
 
-.navbar-brand .navbar-item {
+.logo-svg {
   color: #DFD8C8;
   font-size: large;
   font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-  font-weight: 600;
-  font-stretch: -50%;
+  max-width: 30px;
+  max-height: 30px;
 }
 
 
