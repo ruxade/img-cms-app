@@ -1,14 +1,15 @@
 <template>
-  <div class="image-show">
 
+  <!-- <div class="image-show">
+    <h3>Preview</h3>
     <div v-if="image">
       <img :src="imageUrl(image.path)" alt="Image" />
     </div>
 
     <div v-else>
-      <p>Loading image details...</p>
+      <p>Loading image ...</p>
     </div>
-  </div>
+  </div> -->
 
   <div class="scene">
     <!-- <button @click="enableMotion" v-if="showButton" class="motion-button">Enable Motion Controls</button> -->
@@ -28,7 +29,8 @@ import {
   MeshBasicMaterial,
   Mesh,
   TextureLoader,
-  EquirectangularReflectionMapping
+  EquirectangularReflectionMapping,
+  LinearFilter
 } from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
@@ -63,7 +65,7 @@ export default {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
 
       // GEOMETRY
-      const geometry = new SphereGeometry(200, 32, 32);
+      const geometry = new SphereGeometry(500, 60, 40);
       const material = new MeshBasicMaterial({
          color: "#ffffff",
         //  wireframe: true
@@ -77,6 +79,7 @@ export default {
       this.controls = new OrbitControls(this.camera, canvas);
       this.controls.enableDamping = true;
       this.controls.enableZoom = false;
+      this.controls.enablePan = false;
       // this.controls.minPolarAngle = Math.PI / 2;
       // this.controls.maxPolarAngle = Math.PI / 2;
       // this.controls.screenSpacePanning = true;
@@ -119,7 +122,11 @@ export default {
             objectUrl,
             (texture) => {
               // Set the mapping mode for environment maps:
+              texture.flipY = false;
               texture.mapping = EquirectangularReflectionMapping;
+              texture.minFilter = LinearFilter;
+
+
 
               this.mesh.material.envMap = texture;
               // Change the base color to white so the env map shows correctly:
@@ -176,13 +183,9 @@ mounted() {
 </script>
 
 <style scoped>
-.image-show {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 1rem;
-  text-align: center;
-  gap: 20px;
-}
+
+
+
 .scene {
   width: 100%;
   height: 100vh;
