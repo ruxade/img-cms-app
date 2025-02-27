@@ -18,8 +18,12 @@ export default defineConfig({
   },
   server: {
     proxy: {
+      '/storage': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
       '/api': {
-        target: 'http://localhost:8000', // Ensure your Laravel server is running here
+        target: 'http://localhost:8000', // Laravel server running here
         changeOrigin: true,
         secure: false,
       },

@@ -27,7 +27,8 @@ import {
   SphereGeometry,
   MeshBasicMaterial,
   Mesh,
-  TextureLoader
+  TextureLoader,
+  EquirectangularReflectionMapping
 } from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
@@ -62,9 +63,9 @@ export default {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
 
       // GEOMETRY
-      const geometry = new SphereGeometry(50, 32, 32);
+      const geometry = new SphereGeometry(200, 32, 32);
       const material = new MeshBasicMaterial({
-         color: "#ff0000",
+         color: "#ffffff",
         //  wireframe: true
          });
         //  const imageMaterial = new MeshBasicMaterial({ map: texture });
@@ -76,6 +77,10 @@ export default {
       this.controls = new OrbitControls(this.camera, canvas);
       this.controls.enableDamping = true;
       this.controls.enableZoom = false;
+      // this.controls.minPolarAngle = Math.PI / 2;
+      // this.controls.maxPolarAngle = Math.PI / 2;
+      // this.controls.screenSpacePanning = true;
+
 
       // start render loop
       this.animate();
@@ -83,7 +88,8 @@ export default {
 
 
     imageUrl(path) {
-      return `http://localhost:8000/storage/${path}`;
+      // return `http://localhost:8000/storage/${path}`;
+      return `/storage/${path}`;
     },
     async fetchImage() {
       try {
@@ -108,13 +114,17 @@ export default {
           const blob = response.data;
           const objectUrl = URL.createObjectURL(blob);
           const textureLoader = new TextureLoader();
-          textureLoader.crossOrigin = 'anonymous';
+          // textureLoader.crossOrigin = 'anonymous';
           textureLoader.load(
             objectUrl,
             (texture) => {
-              this.mesh.material.map = texture;
+              // Set the mapping mode for environment maps:
+              texture.mapping = EquirectangularReflectionMapping;
+
+              this.mesh.material.envMap = texture;
+              // Change the base color to white so the env map shows correctly:
+              this.mesh.material.color.set(0xffffff);
               this.mesh.material.needsUpdate = true;
-              // Optionally revoke the object URL after the texture is loaded
               URL.revokeObjectURL(objectUrl);
             },
             undefined,
