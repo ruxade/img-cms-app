@@ -6,9 +6,9 @@
         <div v-for="image in images" :key="image.id" class="image-item">
           <div class="buttons">
             <!--  Delete button -->
-            <div class="btn-delete" @click="deleteImage(image.id)">
+            <!-- <div class="btn-delete" @click="deleteImage(image.id)">
               <i class="fa-solid fa-trash"></i>
-            </div>
+            </div> -->
 
             <div class="btn-toggle" @click="toggleVisibility(image)">
               <i v-if="image.visibility === 'public'" class="fa-solid fa-eye"></i>
@@ -27,9 +27,11 @@
 
 
           <img :src="imageUrl(image.path)" alt="Uploaded Image" />
-          <p class="caption">{{ image.caption }}</p>
-          <!-- <p><strong>Caption:</strong> {{ image.caption }}</p> -->
-          <p>({{ image.visibility }})</p>
+
+            <p class="caption">{{ image.caption }}</p>
+            <!-- <p><strong>Caption:</strong> {{ image.caption }}</p> -->
+            <p id="visibility">Visibility : {{ image.visibility }} image </p>
+
 
 
 
@@ -65,7 +67,7 @@ export default {
      this.$router.push({ name: 'ImageShow', params: { id: image.id } });
   },
 
-    imageUrl(path) {
+  imageUrl(path) {
       // php artisan storage:link
       return `http://localhost:8000/storage/${path}`
     },
@@ -120,7 +122,7 @@ export default {
       }
     },
 
-  async toggleVisibility(image) {
+    async toggleVisibility(image) {
       try {
         const token = localStorage.getItem('access_token');
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -145,7 +147,14 @@ export default {
 
 <style scoped>
 
-
+#visibility {
+  position: absolute;
+  font-size: small;
+  top: 10px;
+  color: aliceblue;
+  font-variant-caps: all-small-caps;
+  font-stretch: ultra-expanded;
+}
 
 
 </style>
