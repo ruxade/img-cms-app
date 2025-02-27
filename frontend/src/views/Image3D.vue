@@ -1,172 +1,178 @@
 <template>
+  <div class="image-show">
+
+    <div v-if="image">
+      <img :src="imageUrl(image.path)" alt="Image" />
+    </div>
+
+    <div v-else>
+      <p>Loading image details...</p>
+    </div>
+  </div>
+
   <div class="scene">
     <!-- <button @click="enableMotion" v-if="showButton" class="motion-button">Enable Motion Controls</button> -->
     <canvas ref="canvas" class="webgl"></canvas>
-
   </div>
+
+
 </template>
 
 <script>
-import { nextTick } from "vue";
 import axios from 'axios'
-import * as THREE from "three";
-import { ref, onMounted, onUnmounted } from "vue";
+import {
+  WebGLRenderer,
+  PerspectiveCamera,
+  Scene,
+  SphereGeometry,
+  MeshBasicMaterial,
+  Mesh,
+  TextureLoader
+} from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
-export default {
-  name: "Image3D",
 
+
+
+export default {
+  name: 'ImageShow',
   data() {
     return {
-      scene: null,
-      camera: null,
-      renderer: null,
-      mesh: null,
-      controls: null,
-      sizes: {
-        width: window.innerWidth,
-        height: window.innerHeight,
-      },
-      image:null,
+      image: null,
       imageId: null,
-      cursor: { x: 0, y: 0 },
-      animationFrameId: null,
     };
   },
-  async mounted() {
-    this.imageId = this.$route.params.id;
-    await nextTick(); // Ensure DOM is ready before accessing refs
-
-    this.initScene();
-    this.initCamera();
-    this.initRenderer();
-    this.initControls();
-    this.initGeometry();
-    this.initEventListeners();
-    this.animate();
-
-    this.fetchImage();
-  },
-  beforeUnmount() {
-    // Cleanup event listeners and animations
-    window.removeEventListener("mousemove", this.handleMouseMove);
-    window.removeEventListener("resize", this.handleResize);
-
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-    }
-
-    if (this.renderer) {
-      this.renderer.dispose();
-    }
-  },
-
   methods: {
+
+    initThreeJS() {
+      // Canvas
+      const canvas = this.$refs.canvas;
+
+      // Scene
+      this.scene = new Scene();
+      this.camera = new PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      this.camera.position.z = 3;
+
+      this.renderer = new WebGLRenderer({ canvas, antialias: true });
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+
+      // GEOMETRY
+      const geometry = new SphereGeometry(50, 32, 32);
+      const material = new MeshBasicMaterial({
+         color: "#ff0000",
+        //  wireframe: true
+         });
+        //  const imageMaterial = new MeshBasicMaterial({ map: texture });
+      this.mesh = new Mesh(geometry, material);
+      geometry.scale(-1, 1, 1);
+      this.scene.add(this.mesh);
+
+      // CONTROLS
+      this.controls = new OrbitControls(this.camera, canvas);
+      this.controls.enableDamping = true;
+      this.controls.enableZoom = false;
+
+      // start render loop
+      this.animate();
+    },
+
+
+    imageUrl(path) {
+      return `http://localhost:8000/storage/${path}`;
+    },
     async fetchImage() {
       try {
         const response = await axios.get(`http://localhost:8000/api/images/${this.imageId}`, {
-          headers: { Accept: "application/json" },
+          headers: { 'Accept': 'application/json' }
         });
         this.image = response.data;
-        this.loadTexture();
+        this.loadTexture(); //Load image as texture
       } catch (error) {
         console.error("Error fetching image", error);
       }
     },
 
-    imageUrl(path) {
-      return `http://localhost:8000/storage/${path}`;
-    },
-
-    initScene() {
-      this.scene = new THREE.Scene();
-    },
-
-    initCamera() {
-      this.camera = new THREE.PerspectiveCamera(75, this.sizes.width / this.sizes.height, 0.1, 1000);
-      this.camera.position.set(0, 0, 3);
-      this.scene.add(this.camera);
-    },
-
-    initRenderer() {
-      const canvas = this.$refs.canvas;
-      this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-      this.renderer.setSize(this.sizes.width, this.sizes.height);
-      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    },
-
-    initControls() {
-      this.controls = new OrbitControls(this.camera, this.$refs.canvas);
-      this.controls.enableDamping = true;
-      this.controls.enableZoom = false;
-    },
-
-    initGeometry() {
-      // Sphere Geometry (For Panorama)
-      const geometry = new THREE.SphereGeometry(500, 32, 32);
-      geometry.scale(-1, 1, 1);
-
-      const material = new THREE.MeshBasicMaterial({ color: 0x222222 }); // Placeholder color
-      this.mesh = new THREE.Mesh(geometry, material);
-      this.scene.add(this.mesh);
-
-      // Red Cube (For Reference)
-      const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-      const cubeMaterial = new THREE.MeshBasicMaterial({ color: "#ff0000" });
-      const cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
-      cubeMesh.position.set(2, 2, 2);
-      this.scene.add(cubeMesh);
-    },
 
     loadTexture() {
-      if (!this.image) return;
+      if (!this.image || !this.image.path) return;
 
-      const textureLoader = new THREE.TextureLoader();
-      const textureUrl = this.imageUrl(`images/${this.imageId}.png`);
-      textureLoader.load(textureUrl, (texture) => {
-        this.mesh.material.map = texture;
-        this.mesh.material.needsUpdate = true;
-      });
+      const textureUrl = this.imageUrl(this.image.path);
+      axios
+        .get(textureUrl, { responseType: 'blob' })
+        .then((response) => {
+          const blob = response.data;
+          const objectUrl = URL.createObjectURL(blob);
+          const textureLoader = new TextureLoader();
+          textureLoader.crossOrigin = 'anonymous';
+          textureLoader.load(
+            objectUrl,
+            (texture) => {
+              this.mesh.material.map = texture;
+              this.mesh.material.needsUpdate = true;
+              // Optionally revoke the object URL after the texture is loaded
+              URL.revokeObjectURL(objectUrl);
+            },
+            undefined,
+            (err) => {
+              console.error("Error loading texture", err);
+            }
+          );
+        })
+        .catch((err) => {
+          console.error("Error fetching image as blob", err);
+        });
     },
 
     animate() {
-      const tick = () => {
-        this.camera.lookAt(this.mesh.position);
+      // animation loop
+      const renderLoop = () => {
         this.controls.update();
+
         this.renderer.render(this.scene, this.camera);
-        this.animationFrameId = requestAnimationFrame(tick);
+        this.animationFrameId = requestAnimationFrame(renderLoop);
       };
-      tick();
+      renderLoop();
     },
-
-    initEventListeners() {
-      // Handle Mouse Move
-      window.addEventListener("mousemove", this.handleMouseMove);
-
-      // Handle Window Resize
-      window.addEventListener("resize", this.handleResize);
-    },
-
-    handleMouseMove(event) {
-      this.cursor.x = event.clientX / this.sizes.width - 0.5;
-      this.cursor.y = -(event.clientY / this.sizes.height - 0.5);
-    },
-
     handleResize() {
-      this.sizes.width = window.innerWidth * 0.8;
-      this.sizes.height = window.innerHeight * 0.8;
-
-      this.camera.aspect = this.sizes.width / this.sizes.height;
+      this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
-
-      this.renderer.setSize(this.sizes.width, this.sizes.height);
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
     },
+  },
+mounted() {
+    // Getting image ID from the route
+    this.imageId = this.$route.params.id;
+
+    this.initThreeJS();
+
+    this.fetchImage();
+    window.addEventListener('resize', this.handleResize);
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.handleResize);
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+    if (this.renderer) {
+      this.renderer.dispose();
+    }
   },
 };
 </script>
 
-
 <style scoped>
+.image-show {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
+  text-align: center;
+  gap: 20px;
+}
 .scene {
   width: 100%;
   height: 100vh;

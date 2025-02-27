@@ -68,24 +68,13 @@
 
 ## Database Structure
 
-The application uses a PostgreSQL database. Below is a high-level overview of the core tables:
+The application uses a PostgreSQL database. At a high level, it includes the following tables:
 
-### `users`
-- `id` (primary key)
-- `name`
-- `email`
-- `password`
-- `created_at`
-- `updated_at`
+- **Users:**
+  Stores user details such as name, email, and password.
 
-### `images`
-- `id` (primary key)
-- `user_id` (foreign key to `users.id`)
-- `caption`
-- `file_path` (path to the stored image)
-- `visibility` (public/private)
-- `created_at`
-- `updated_at`
+- **Images:**
+  Contains image-related data including the file path, caption, and visibility status, along with a reference to the user who uploaded it.
 
 ## Usage
 
@@ -98,4 +87,3 @@ The application uses a PostgreSQL database. Below is a high-level overview of th
 
 ### Offline Support
 - **Offline Access:** The application caches image metadata using IndexedDB, ensuring your library remains accessible even when offline.
-
