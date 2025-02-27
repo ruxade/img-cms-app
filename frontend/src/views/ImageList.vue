@@ -84,7 +84,7 @@ export default {
           const response = await axios.get('http://localhost:8000/api/images', {
             headers: { 'Accept': 'application/json' }
           });
-          this.images = response.data;
+          this.images = response.data.reverse();
           // Save images in IndexedDB for offline use
           await saveImages(this.images);
         } catch (err) {

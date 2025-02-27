@@ -45,7 +45,7 @@ export default {
         const response = await axios.get('http://localhost:8000/api/public-images', {
           headers: { 'Accept': 'application/json' }
         });
-        this.images = response.data;
+        this.images = response.data.reverse();
       } catch (err) {
         console.error("Error fetching public images", err);
       }

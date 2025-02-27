@@ -12,8 +12,8 @@ class ImageController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'image'   => 'required|image|max:5120', // max size 5MB
-            'caption' => 'nullable|string|max:255',
+            'image'   => 'required|image|max:10240', // max size 10MB
+            'caption' => 'nullable|string|max:100',
             'visibility' => 'required|in:public,private', // require public or private
         ]);
 

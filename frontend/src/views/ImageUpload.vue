@@ -108,16 +108,16 @@ export default {
         });
         console.log("Upload response:", response);
 
-        Swal.fire("Added!", "Your image has been uploaded.", "success")
+        Swal.fire("Added!", "Image has been uploaded.", "success")
       .then(() => {
         this.$router.push({ name: "Images" });
         // this.resetForm();
       });
 
       } catch (err) {
-        this.error = err.response?.data?.message || "Upload failed.";
-        this.message = "";
-      }
+    console.error("Upload failed:", err.response?.data); // Log full error details
+    this.error = err.response?.data?.message || "Upload failed.";
+  }
     },
     openCamera() {
       this.showCamera = true;
@@ -168,14 +168,14 @@ export default {
 
 <style scoped>
 .image-upload {
-  width: 50%;
+  width: 80%;
   min-height: 300px;
   display: flex;
   justify-content: space-around;
   flex-direction: column;
   align-items: center;
   margin: 5rem auto;
-  padding: 4rem 0;
+  padding: 4rem;
   border: 1px solid #cecece;
   border-radius: 8px;
   background-color: #E5E1DA;
@@ -207,7 +207,7 @@ select, input {
 .preview {
   max-width: 100%;
   height: auto;
-  margin: 10px;
+  margin: 10px 0;
   border-radius: 4px;
   border: 2px solid #497174;
 }
