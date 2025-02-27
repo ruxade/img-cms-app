@@ -12,6 +12,7 @@
 - [Installation and Setup](#installation-and-setup)
   - [Backend (Laravel)](#backend-laravel)
   - [Frontend (Vue 3)](#frontend-vue-3)
+- [Database Structure](#database-structure)
 - [Usage](#usage)
   - [Image Upload & Management](#image-upload--management)
   - [360° Viewer](#360-viewer)
@@ -41,24 +42,60 @@
 
 
 ## Installation and Setup
-<!-- Clone the Repository -->
+
 
 ### Backend (Laravel)
 
  **Backend Directory**
 
-cp .env.example .env
-Update the .env file
+`cp .env.example .env`
+`Update the .env file`
 
-composer install
+`composer install`
+`php artisan key:generate`
+`php artisan migrate`
+`php artisan storage:link`
 
-php artisan migrate
-php artisan storage:link
 
-
-php artisan serve
+`php artisan serve`
 
 ### Frontend (Vue 3)
  **Frontend Directory**
-npm install
-npm run dev
+`npm install`
+`npm run dev`
+
+
+
+## Database Structure
+
+The application uses a PostgreSQL database. Below is a high-level overview of the core tables:
+
+### `users`
+- `id` (primary key)
+- `name`
+- `email`
+- `password`
+- `created_at`
+- `updated_at`
+
+### `images`
+- `id` (primary key)
+- `user_id` (foreign key to `users.id`)
+- `caption`
+- `file_path` (path to the stored image)
+- `visibility` (public/private)
+- `created_at`
+- `updated_at`
+
+## Usage
+
+### Image Upload & Management
+- **Upload:** Choose an image file or capture a photo, then add a caption and set its visibility.
+- **Manage:** View your uploaded images, delete them, or toggle their public/private status.
+
+### 360° Viewer
+- **Interactive Panoramas:** Experience an immersive 360° view of your images, powered by Three.js and OrbitControls.
+
+### Offline Support
+- **Offline Access:** The application caches image metadata using IndexedDB, ensuring your library remains accessible even when offline.
+
