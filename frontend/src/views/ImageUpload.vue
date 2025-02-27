@@ -1,5 +1,6 @@
 <template>
   <div class="image-upload">
+
     <h1>Upload Image</h1>
     <form @submit.prevent="uploadImage">
       <div class="upload-btn">
@@ -211,7 +212,9 @@ select, input {
   border-radius: 4px;
   border: 2px solid #497174;
 }
-
+form{
+  width: 100%;
+}
 video {
   width: 100%;
   max-width: 400px;
