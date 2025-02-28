@@ -47,4 +47,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+   // Define the relationship with the Image model
+   public function images()
+   {
+       return $this->hasMany(Image::class);
+   }
 }
