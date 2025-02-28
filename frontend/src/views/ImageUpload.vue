@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import axios from "axios";
+// import axios from "axios";
 import { saveImages, getOfflineImages } from '../utils/db'
 import Swal from 'sweetalert2'
 
@@ -98,27 +98,20 @@ export default {
       });
 
       try {
-        const token = localStorage.getItem("access_token");
-        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-        const response = await axios.post("http://localhost:8000/api/images", formData, {
+        const response = await this.$axios.post("/images", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
-            Accept: "application/json",
           },
         });
-        console.log("Upload response:", response);
 
         Swal.fire("Added!", "Image has been uploaded.", "success")
-      .then(() => {
-        this.$router.push({ name: "Images" });
-        // this.resetForm();
-      });
-
+          .then(() => {
+            this.$router.push({ name: "Images" });
+          });
       } catch (err) {
-    console.error("Upload failed:", err.response?.data); // Log full error details
-    this.error = err.response?.data?.message || "Upload failed.";
-  }
+        console.error("Upload failed:", err.response?.data);
+        this.error = err.response?.data?.message || "Upload failed.";
+      }
     },
     openCamera() {
       this.showCamera = true;

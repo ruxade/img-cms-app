@@ -50,7 +50,7 @@
 
 
 <script>
-import axios from 'axios'
+
 import { saveImages, getOfflineImages } from '../utils/db'
 import Swal from 'sweetalert2'
 
@@ -74,29 +74,22 @@ export default {
   },
 
   imageUrl(path) {
-      // php artisan storage:link
-      return `http://localhost:8000/storage/${path}`
+      return this.$imageUrl(path);
     },
-    async fetchImages() {
-      if (navigator.onLine) {
-        try {
-          // Fetch public images
-          const response = await axios.get('http://localhost:8000/api/images', {
-            headers: { 'Accept': 'application/json' }
-          });
-          this.images = response.data.reverse();
-          // Save images in IndexedDB for offline use
-          await saveImages(this.images);
-        } catch (err) {
-          console.error("Error fetching images from API:", err);
-          // Fallback to offline images if API fails
-          this.images = await getOfflineImages();
-        }
-      } else {
-        // Offline: load images from IndexedDB
-        this.images = await getOfflineImages();
+
+  async fetchImages() {
+    if (navigator.onLine) {
+      try {
+        const response = await this.$axios.get('/images');
+        this.images = response.data.reverse();
+        await saveImages(this.images);// Save images in IndexedDB for offline use
+      } catch (err) {
+        console.error("Error fetching images from API:", err);
       }
-    },
+    } else {
+      this.images = await getOfflineImages(); // Offline: load images from IndexedDB
+    }
+  },
 
     async deleteImage(id) {
 
@@ -115,11 +108,7 @@ export default {
         return;
       }
       try {
-        const token = localStorage.getItem('access_token')
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-        await axios.delete(`http://localhost:8000/api/images/${id}`, {
-          headers: { 'Accept': 'application/json' }
-        })
+        await this.$axios.delete(`/images/${id}`);
         // Refresh images
         this.fetchImages()
         Swal.fire('Deleted!', 'Your image has been deleted.', 'success');
@@ -130,11 +119,7 @@ export default {
 
     async toggleVisibility(image) {
       try {
-        const token = localStorage.getItem('access_token');
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        const response = await axios.patch(`http://localhost:8000/api/images/${image.id}/toggle-visibility`, {}, {
-          headers: { 'Accept': 'application/json' }
-        });
+        const response = await this.$axios.patch(`/images/${image.id}/toggle-visibility`);
         // Update the local image with new visibility status
         const index = this.images.findIndex(img => img.id === image.id);
         if (index !== -1) {

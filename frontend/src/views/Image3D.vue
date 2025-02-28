@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+
 import {
   WebGLRenderer,
   PerspectiveCamera,
@@ -34,7 +34,7 @@ import {
   // DeviceOrientationControls
 } from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-
+// import { saveImages, getOfflineImages, saveImageLocally, getCachedImage } from '../utils/db';
 
 
 
@@ -84,8 +84,6 @@ export default {
       // this.controls.minPolarAngle = Math.PI / 2;
       // this.controls.maxPolarAngle = Math.PI / 2;
 
-
-
       // Initialize DeviceOrientationControls
       // this.deviceControls = new DeviceOrientationControls(this.camera);
 
@@ -96,16 +94,14 @@ export default {
 
 
     imageUrl(path) {
-      // return `http://localhost:8000/storage/${path}`;
-      return `/storage/${path}`;
+      return `http://localhost:8000/storage/${path}`;
+      // return `/storage/${path}`;
     },
     async fetchImage() {
       try {
-        const response = await axios.get(`http://localhost:8000/api/images/${this.imageId}`, {
-          headers: { 'Accept': 'application/json' }
-        });
+        const response = await this.$axios.get(`/images/${this.imageId}`);
         this.image = response.data;
-        this.loadTexture(); //Load image as texture
+        this.loadTexture();
       } catch (error) {
         console.error("Error fetching image", error);
       }
@@ -115,41 +111,27 @@ export default {
     loadTexture() {
       if (!this.image || !this.image.path) return;
 
-      const textureUrl = this.imageUrl(this.image.path);
-      axios
-        .get(textureUrl, { responseType: 'blob' })
-        .then((response) => {
-          const blob = response.data;
-          const objectUrl = URL.createObjectURL(blob);
-          const textureLoader = new TextureLoader();
-          // textureLoader.crossOrigin = 'anonymous';
-          textureLoader.load(
-            objectUrl,
-            (texture) => {
-              // Set the mapping mode for environment maps:
-              texture.flipY = false;
-              texture.mapping = EquirectangularReflectionMapping;
-              texture.minFilter = LinearFilter;
+      // const textureUrl = this.image.path;
+      const textureUrl = `/storage/${this.image.path}`; // Vite proxy for storage access
 
+      const textureLoader = new TextureLoader();
+      textureLoader.load(
+        textureUrl,
+        (texture) => {
+          texture.flipY = false;
+          texture.mapping = EquirectangularReflectionMapping;
+          texture.minFilter = LinearFilter;
 
-
-              this.mesh.material.envMap = texture;
-              // Change the base color to white so the env map shows correctly:
-              this.mesh.material.color.set(0xffffff);
-              this.mesh.material.needsUpdate = true;
-              URL.revokeObjectURL(objectUrl);
-            },
-            undefined,
-            (err) => {
-              console.error("Error loading texture", err);
-            }
-          );
-        })
-        .catch((err) => {
-          console.error("Error fetching image as blob", err);
-        });
+          this.mesh.material.envMap = texture;
+          this.mesh.material.color.set(0xffffff);
+          this.mesh.material.needsUpdate = true;
+        },
+        undefined,
+        (err) => {
+          console.error("Error loading texture", err);
+        }
+      );
     },
-
     animate() {
       // animation loop
       const renderLoop = () => {
@@ -172,7 +154,7 @@ export default {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
     },
   },
-mounted() {
+  mounted() {
     // Getting image ID from the route
     this.imageId = this.$route.params.id;
 

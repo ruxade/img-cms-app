@@ -28,7 +28,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 
 export default {
   name: 'Home',
@@ -39,17 +38,24 @@ export default {
   },
   methods: {
     imageUrl(path) {
-      return `http://localhost:8000/storage/${path}`;
+      return this.$imageUrl(path);
     },
 
     async fetchImages() {
-      try {
-        const response = await axios.get('http://localhost:8000/api/public-images', {
-          headers: { 'Accept': 'application/json' }
-        });
-        this.images = response.data.reverse();
-      } catch (err) {
-        console.error("Error fetching public images", err);
+      if (navigator.onLine) {
+        try {
+          const response = await this.$axios.get('/public-images');
+          this.images = response.data.reverse();
+          // Save images in IndexedDB for offline use
+          await saveImages(this.images);
+        } catch (err) {
+          console.error("Error fetching public images", err);
+          // Fallback to offline images if API call fails
+          this.images = await getOfflineImages();
+        }
+      } else {
+        // Offline: load images from IndexedDB
+        this.images = await getOfflineImages();
       }
     },
     view3D(image) {

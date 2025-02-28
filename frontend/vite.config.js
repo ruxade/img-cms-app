@@ -23,7 +23,7 @@ export default defineConfig({
         changeOrigin: true,
       },
       '/api': {
-        target: 'http://localhost:8000', // Laravel server running here
+        target: 'http://localhost:8000', // Laravel server 
         changeOrigin: true,
         secure: false,
       },

@@ -41,8 +41,8 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { saveImages, getOfflineImages } from '../utils/db'
+
+// import { saveImages, getOfflineImages } from '../utils/db'
 import Swal from 'sweetalert2'
 
 export default {
@@ -55,17 +55,14 @@ export default {
   },
   methods: {
     view3D(image) {
-    this.$router.push({ name: 'Image3D', params: { id: image.id } });
-  },
+      this.$router.push({ name: 'Image3D', params: { id: image.id } });
+    },
     imageUrl(path) {
-      // Construct the full URL to the stored image
-      return `http://localhost:8000/storage/${path}`;
+      return this.$imageUrl(path);
     },
     async fetchImage() {
       try {
-        const response = await axios.get(`http://localhost:8000/api/images/${this.imageId}`, {
-          headers: { 'Accept': 'application/json' }
-        });
+        const response = await this.$axios.get(`/images/${this.imageId}`);
         this.image = response.data;
       } catch (error) {
         console.error("Error fetching image", error);
@@ -93,37 +90,25 @@ export default {
       return;
     }
     try {
-      const token = localStorage.getItem('access_token')
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-      await axios.delete(`http://localhost:8000/api/images/${id}`, {
-        headers: { 'Accept': 'application/json' }
-      })
-      // Refresh images
-
-      Swal.fire('Deleted!', 'Your image has been deleted.', 'success')
-      .then(() => {
-        this.$router.push({ name: 'Images' });
-      });
-  } catch (err) {
-      console.error("Error deleting image", err)
-    }
+        await this.$axios.delete(`/images/${id}`);
+        Swal.fire('Deleted!', 'Your image has been deleted.', 'success')
+          .then(() => {
+            this.$router.push({ name: 'Images' });
+          });
+      } catch (err) {
+        console.error("Error deleting image", err);
+      }
     },
 
-  async toggleVisibility(image) {
-  try {
-    const token = localStorage.getItem('access_token');
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    const response = await axios.patch(`http://localhost:8000/api/images/${image.id}/toggle-visibility`, {}, {
-      headers: { 'Accept': 'application/json' }
-    });
-    // Update the image with visibility status
-
-    this.image = response.data;
-  } catch (err) {
-    console.error("Error toggling visibility", err);
-  }
-  }
-},
+    async toggleVisibility(image) {
+      try {
+        const response = await this.$axios.patch(`/images/${image.id}/toggle-visibility`);
+        this.image = response.data;
+      } catch (err) {
+        console.error("Error toggling visibility", err);
+      }
+    }
+  },
 
   mounted() {
     // Retrieve the image ID from route parameters
