@@ -135,11 +135,11 @@ export default {
 
 <style scoped>
 .image-show {
-  max-width: 600px;
+  max-width: 60%;
   margin: 2rem auto;
   padding: 1rem;
   text-align: center;
-  gap: 20px;
+
 }
 .info {
   text-align: left;
@@ -149,17 +149,21 @@ export default {
   width: 100%;
   height: auto;
   border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-bottom: 1rem;
+  border-radius: 15px;
+  margin: 3rem 0;
+  box-shadow: 5px 5px 2px #89a8b292 ;
 }
-.buttons-show{
 
+
+.buttons-show{
   display: flex;
   justify-content: space-around;
   align-items: center;
   margin: 30px 0;
 }
-
+button{
+  width: 120px;
+}
 .btn{
 color: #497174;
 border: 1px solid #497174;
