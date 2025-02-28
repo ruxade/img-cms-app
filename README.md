@@ -21,6 +21,8 @@
   - [Image Upload & Management](#image-upload--management)
   - [360° Viewer](#360-viewer)
   - [Offline Support](#offline-support)
+- [Further Improvements](#further-improvements-and-future-features)
+
 
 
 ## Overview
@@ -91,3 +93,22 @@ The application uses a PostgreSQL database. At a high level, it includes the fol
 
 ### Offline Support
 - **Offline Access:** The application caches image metadata using IndexedDB, ensuring your library remains accessible even when offline.
+
+
+## Further Improvements and Future Features
+
+### Image Differentiation and Display
+- **Image Type Column:**
+  Add a new column to the `images` table to distinguish between 360° panoramic images and standard images.
+- **Conditional Rendering:**
+  - For images marked as 360° panoramas, project them onto the 3D sphere in the viewer.
+  - For non-panorama images, display them as standard images within the gallery.
+
+### Gallery Organization
+- **Separate Tabs for 360 and standard images:**
+  Separate 360° panoramas from regular images for easier navigation.
+
+### Mobile Experience Enhancements
+- **Gyroscopic Controls:**
+  Enable device orientation (gyroscopic) controls on mobile devices using Three.js’s `DeviceOrientationControls` for a more immersive 360° viewing experience.
+
