@@ -28,7 +28,7 @@
 </template>
 
 <script>
-
+import { saveImages, getOfflineImages } from '../utils/db';
 export default {
   name: 'Home',
   data() {

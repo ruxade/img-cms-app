@@ -29,7 +29,7 @@ export async function saveImages(images) {
     await tx.store.put(plainImage);
   }
   await tx.done;
-  console.log('indexedDB')
+  console.log('saved- indexedDB')
 }
 
 export async function getOfflineImages() {

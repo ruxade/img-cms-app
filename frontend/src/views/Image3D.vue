@@ -34,8 +34,7 @@ import {
   // DeviceOrientationControls
 } from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-// import { saveImages, getOfflineImages, saveImageLocally, getCachedImage } from '../utils/db';
-
+// import { saveImages, getOfflineImages }  from '../utils/db';
 
 
 export default {
