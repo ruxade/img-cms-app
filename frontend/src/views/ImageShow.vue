@@ -54,6 +54,9 @@ export default {
     }
   },
   methods: {
+    view3D(image) {
+    this.$router.push({ name: 'Image3D', params: { id: image.id } });
+  },
     imageUrl(path) {
       // Construct the full URL to the stored image
       return `http://localhost:8000/storage/${path}`;
