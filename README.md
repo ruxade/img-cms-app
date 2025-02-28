@@ -5,7 +5,7 @@
 
 
 ## 🎥 Demo
-![360 Frame Demo](demo/360frame_demo.gif)
+![360 Frame Demo](demo/360frame_demo2.gif)
 
 
 ## Table of Contents

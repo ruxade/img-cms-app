@@ -4,7 +4,7 @@
   <nav class="navbar">
 
     <div class="navbar-brand">
-  <router-link to="/" class="navbar-item">
+  <router-link to="/about" class="navbar-item">
     <img src="@/assets/360_logo.svg" alt="360_Logo" style="max-height: 60px;" />
   </router-link>
 </div>

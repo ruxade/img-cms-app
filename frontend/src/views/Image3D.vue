@@ -30,7 +30,8 @@ import {
   Mesh,
   TextureLoader,
   EquirectangularReflectionMapping,
-  LinearFilter
+  LinearFilter,
+  // DeviceOrientationControls
 } from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
@@ -82,7 +83,11 @@ export default {
       this.controls.enablePan = false;
       // this.controls.minPolarAngle = Math.PI / 2;
       // this.controls.maxPolarAngle = Math.PI / 2;
-      // this.controls.screenSpacePanning = true;
+
+
+
+      // Initialize DeviceOrientationControls
+      // this.deviceControls = new DeviceOrientationControls(this.camera);
 
 
       // start render loop
@@ -148,8 +153,14 @@ export default {
     animate() {
       // animation loop
       const renderLoop = () => {
-        this.controls.update();
-
+      //   if (this.deviceControls) {
+      //   // Check if device orientation exists
+      // this.deviceControls.update();
+      // } else if (this.controls) {
+      //   //otherwise use OrbitControls
+      //   this.controls.update();
+      // }
+      this.controls.update();
         this.renderer.render(this.scene, this.camera);
         this.animationFrameId = requestAnimationFrame(renderLoop);
       };
