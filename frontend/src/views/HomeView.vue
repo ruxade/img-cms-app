@@ -10,9 +10,12 @@
       <template v-if="images.length">
         <div v-for="image in images" :key="image.id" class="image-item">
           <img :src="imageUrl(image.path)" alt="Uploaded Image" />
-          <p class="caption">{{ image.caption }}</p>
-                    <div class="btn-3d" @click="view3D(image)">
+
+          <div class="info">
+            <div class="btn-3d" @click="view3D(image)">
               <i class="fa-solid fa-cube"></i>
+            </div>
+            <p class="caption">{{ image.caption }}</p>
             </div>
 
         </div>
@@ -41,7 +44,6 @@ export default {
 
     async fetchImages() {
       try {
-        // Fetch public images without needing an Authorization header.
         const response = await axios.get('http://localhost:8000/api/public-images', {
           headers: { 'Accept': 'application/json' }
         });
@@ -51,7 +53,6 @@ export default {
       }
     },
     view3D(image) {
-      // Navigate to the 3D projection page, for example:
       this.$router.push({ name: 'Image3D', params: { id: image.id } });
     }
   },
@@ -65,6 +66,52 @@ export default {
 #home{
   background-color: #e5e1da67;
   height: 100%;
+}
+
+.image-item {
+  position: relative;
+
+  margin-bottom: 3rem;
+  padding: 0;
+  border: 1px solid #8c8c8c92;
+  box-shadow: 5px 5px 2px #89a8b292 ;
+  border-radius: 15px;
+  width: 100%;
+  height: 350px;
+}
+.image-item img {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+.info {
+  opacity: 0.1;
+  border-radius: 15px;
+  height: 100%;
+  width: 100%;
+  padding: 45px;
+  position: absolute;
+}
+
+.btn-3d{
+  display: flex;
+  justify-content: flex-end;
+}
+
+p {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  color: #000000f5;
+  align-items: center;
+
+}
+
+.info:hover{
+  background-color: #fffffff5;
+  opacity: 0.7;
+  color: #000000f5;
+  font-size: x-large;
 }
 
 </style>
