@@ -18,10 +18,10 @@ Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logo
 // Protected Image Management Routes
 Route::middleware('auth:sanctum')->group(function () {
   Route::get('/public-images', [ImageController::class, 'publicIndex']);
-  Route::get('/images/{id}', [ImageController::class, 'show']);
+  Route::get('/images/{image}', [ImageController::class, 'show']);
   Route::get('/images', [ImageController::class, 'index']);
   Route::post('/images', [ImageController::class, 'store']);
-  Route::middleware('auth:sanctum')->patch('/images/{id}/toggle-visibility', [ImageController::class, 'toggleVisibility']);
+  Route::middleware('auth:sanctum')->patch('/images/{image}/toggle-visibility', [ImageController::class, 'toggleVisibility']);
 
-  Route::delete('/images/{id}', [ImageController::class, 'destroy']);
+  Route::delete('/images/{image}', [ImageController::class, 'destroy']);
 });
