@@ -1,8 +1,14 @@
+![360 Frame Logo](./frontend/src/assets/360logo_color.png)
 # 360 Frame
 
 360 Frame is a full-stack web application for image management that uses a Laravel-based CMS for the backend and a Vue 3 (PWA) for the frontend. It enables users to upload images with captions and visibility settings, view them in a personal library or on a public gallery, and even enjoy an immersive 360° viewer built with Three.js. The app also supports offline viewing by caching image metadata with IndexedDB.Three.js.
 
-![360 Frame Logo](./frontend/src/assets/360logo_color.png)
+## 🎥 Demo
+[▶ Watch the Demo](demo/360frame_demo.mp4)
+
+## 🎥 Demo
+![360 Frame Demo](demo/360frame_demo.gif)
+
 
 ## Table of Contents
 
